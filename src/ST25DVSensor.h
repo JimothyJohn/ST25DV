@@ -38,6 +38,7 @@
 #include "ST25DV/st25dv.h"
 
 #define ST25DV_OK NDEF_OK
+
 /**
  * @brief  ST25DV Ack Nack enumerator definition
  */
@@ -58,6 +59,10 @@ class ST25DV {
     int begin(int32_t gpo, int32_t ldp, TwoWire *pwire = &WIRE);
     int writeURI(String protocol, String uri, String info);
     int readURI(String *s);
+    int readURI(sURI_Info *uri);
+    int readText(char **c);
+    int readText(NDEF_Text_info_t *text);
+    int readBuffer(uint8_t *newBuffer);
 
     void ST25DV_GPO_Init(void);
     void ST25DV_GPO_DeInit(void);

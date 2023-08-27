@@ -75,7 +75,28 @@ int ST25DV::writeURI(String protocol, String uri, String info)
   return NDEF_WriteURI(&_URI);
 }
 
+int ST25DV::readURI(sURI_Info *uri)
+{
+  uint16_t ret;
+  sRecordInfo_t recordInfo;
+  // increase buffer size for bigger messages
+  ret = NDEF_ReadNDEF(NDEF_Buffer);
+  if (ret) {
+    return ret;
+  }
 
+  ret = NDEF_IdentifyBuffer(&recordInfo, NDEF_Buffer);
+  if (ret) {
+    return ret;
+  }
+
+  ret = NDEF_ReadURI(&recordInfo, uri);
+  if (ret) {
+    return ret;
+  }
+
+  return 0;
+}
 
 int ST25DV::readURI(String *s)
 {
@@ -98,6 +119,69 @@ int ST25DV::readURI(String *s)
     return ret;
   }
   *s = String(uri.protocol) + String(uri.URI_Message);
+
+  return 0;
+}
+
+int ST25DV::readText(NDEF_Text_info_t *text)
+{
+  uint16_t ret;
+  sRecordInfo_t recordInfo;
+  // increase buffer size for bigger messages
+  ret = NDEF_ReadNDEF(NDEF_Buffer);
+  if (ret) {
+    return ret;
+  }
+
+  ret = NDEF_IdentifyBuffer(&recordInfo, NDEF_Buffer);
+  if (ret) {
+    return ret;
+  }
+
+  ret = NDEF_ReadText(&recordInfo, text);
+  if (ret) {
+    return ret;
+  }
+
+  return 0;
+}
+
+int ST25DV::readBuffer(uint8_t *newBuffer)
+{
+  uint16_t ret;
+  // increase buffer size for bigger messages
+  ret = NDEF_ReadNDEF(newBuffer);
+  if (ret) {
+    return ret;
+  }
+
+  return 0;
+}
+
+int ST25DV::readText(char **c)
+{
+  NDEF_Text_info_t text;
+  uint16_t ret;
+  sRecordInfo_t recordInfo;
+  // increase buffer size for bigger messages
+  ret = NDEF_ReadNDEF(NDEF_Buffer);
+  if (ret) {
+    return ret;
+  }
+
+  ret = NDEF_IdentifyBuffer(&recordInfo, NDEF_Buffer);
+  if (ret) {
+    return ret;
+  }
+
+  ret = NDEF_ReadText(&recordInfo, &text);
+  if (ret) {
+    return ret;
+  }
+
+  Serial.print("Text: ");
+  Serial.println(text.text);
+  *c = text.text;
 
   return 0;
 }
